@@ -47,7 +47,7 @@
 
         async function fetchStockData() {
             const tickerElement = document.getElementById("stock-ticker");
-            tickerElement.innerHTML = "";
+            tickerElement.innerHTML = "<span>Test: Dow Jones: 35000 <span class='up'>(+200)</span></span>";;
 
             for (const symbol of stocks) {
                 const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${apiKey}`;
