@@ -7,7 +7,6 @@
     <style>
         body {
             background: transparent;
-            color: white;
             font-family: Arial, sans-serif;
             margin: 0;
             padding: 0;
@@ -25,9 +24,10 @@
         .ticker span {
             padding: 0 15px;
             font-size: 22px;
+            color: white; /* Ensures stock names and prices are always visible */
         }
-        .up { color: #00ff00; } /* Green for positive change */
-        .down { color: #ff0000; } /* Red for negative change */
+        .up { color: #00ff00 !important; } /* Green for positive change */
+        .down { color: #ff0000 !important; } /* Red for negative change */
         @keyframes tickerMove {
             from { transform: translateX(100%); }
             to { transform: translateX(-100%); }
