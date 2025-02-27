@@ -45,44 +45,46 @@
     </div>
 
     <script>
-        const apiKey = "IC5212P3HFTMPO0U"; // Replace with your Alpha Vantage API key
-        const stocks = ["DIA", "SPY", "QQQ", "AAPL", "TSLA"];
-const stockNames = { "DIA": "Dow Jones", "SPY": "S&P 500", "QQQ": "Nasdaq" };
+        
 
         async function fetchStockData() {
     const tickerElement = document.getElementById("stock-ticker");
     tickerElement.innerHTML = "";
 
-    const apiKey = "YOUR_ALPHA_VANTAGE_API_KEY"; // Replace with your API key
-    const symbols = ["DIA", "SPY", "QQQ", "AAPL", "TSLA"].join(","); // Comma-separated list
-    const url = `https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&symbols=${symbols}&apikey=${apiKey}`;
+    const apiKey = "423ed693d33d4f53889d96d6ac9ae012"; // Replace with your Twelve Data API key
+    const symbols = ["DIA", "SPY", "QQQ", "AAPL", "TSLA"];
+    const stockNames = { "DIA": "Dow Jones", "SPY": "S&P 500", "QQQ": "Nasdaq" };
 
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log("API Response:", data);
+    for (let i = 0; i < symbols.length; i++) {
+        const symbol = symbols[i];
+        const url = `https://api.twelvedata.com/quote?symbol=${symbol}&apikey=${apiKey}`;
 
-        if (!data["Stock Quotes"]) {
-            console.error("No stock data received:", data);
-            return;
-        }
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+            console.log(`API Response for ${symbol}:`, data);
 
-        data["Stock Quotes"].forEach(stock => {
-            const symbol = stock["1. symbol"];
-            const price = parseFloat(stock["2. price"]).toFixed(2);
-            const change = parseFloat(stock["4. change"]).toFixed(2);
-            const changeClass = change >= 0 ? "up" : "down";
+            if (!data || !data.price) {
+                console.error("No stock data received for", symbol, data);
+                continue;
+            }
 
             const name = stockNames[symbol] || symbol;
-            tickerElement.innerHTML += `<span>${name}: ${price} <span class="${changeClass}">(${change})</span></span>`;
-        });
+            const price = parseFloat(data.price).toFixed(2);
+            const change = parseFloat(data.change).toFixed(2);
+            const changeClass = change >= 0 ? "up" : "down";
 
-    } catch (error) {
-        console.error("Error fetching stock data:", error);
+            tickerElement.innerHTML += `<span>${name}: ${price} <span class="${changeClass}">(${change})</span></span>`;
+
+        } catch (error) {
+            console.error("Error fetching stock data for", symbol, error);
+        }
+
+        await new Promise(resolve => setTimeout(resolve, 5000)); // Space out requests
     }
 }
 
-// Refresh data every 60 seconds
+// Fetch stock data every 60 seconds
 fetchStockData();
 setInterval(fetchStockData, 60000);
     </script>
