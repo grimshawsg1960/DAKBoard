@@ -58,8 +58,10 @@
 
                 try {
                     const response = await fetch(url);
-                    const data = await response.json();
-                    const stockInfo = data["Global Quote"];
+const data = await response.json();
+console.log("API Response for", symbol, data); // Debugging
+
+const stockInfo = data["Global Quote"];
 
                     if (!stockInfo) continue; // Skip if no data
 
