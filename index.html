@@ -53,35 +53,38 @@ const stockNames = { "DIA": "Dow Jones", "SPY": "S&P 500", "QQQ": "Nasdaq" };
     const tickerElement = document.getElementById("stock-ticker");
     tickerElement.innerHTML = "";
 
-    for (let i = 0; i < stocks.length; i++) {
-        const symbol = stocks[i];
-        const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=${symbol}&apikey=${apiKey}`;
+    const apiKey = "YOUR_ALPHA_VANTAGE_API_KEY"; // Replace with your API key
+    const symbols = ["DIA", "SPY", "QQQ", "AAPL", "TSLA"].join(","); // Comma-separated list
+    const url = `https://www.alphavantage.co/query?function=BATCH_STOCK_QUOTES&symbols=${symbols}&apikey=${apiKey}`;
 
-        try {
-            const response = await fetch(url);
-            const data = await response.json();
-            console.log("API Response for", symbol, data);
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log("API Response:", data);
 
-            const stockInfo = data["Global Quote"];
-            if (!stockInfo) continue;
-
-            const name = stockNames[symbol] || symbol;
-            const price = parseFloat(stockInfo["05. price"]).toFixed(2);
-            const change = parseFloat(stockInfo["09. change"]).toFixed(2);
-            const changeClass = change >= 0 ? "up" : "down";
-
-            tickerElement.innerHTML += `<span>${name}: ${price} <span class="${changeClass}">(${change})</span></span>`;
-        } catch (error) {
-            console.error("Error fetching stock data for", symbol, error);
+        if (!data["Stock Quotes"]) {
+            console.error("No stock data received:", data);
+            return;
         }
 
-        // Wait 15 seconds before next request to avoid rate limits
-        await new Promise(resolve => setTimeout(resolve, 15000));
+        data["Stock Quotes"].forEach(stock => {
+            const symbol = stock["1. symbol"];
+            const price = parseFloat(stock["2. price"]).toFixed(2);
+            const change = parseFloat(stock["4. change"]).toFixed(2);
+            const changeClass = change >= 0 ? "up" : "down";
+
+            const name = stockNames[symbol] || symbol;
+            tickerElement.innerHTML += `<span>${name}: ${price} <span class="${changeClass}">(${change})</span></span>`;
+        });
+
+    } catch (error) {
+        console.error("Error fetching stock data:", error);
     }
 }
 
-        fetchStockData();
-        setInterval(fetchStockData, 60000); // Refresh every 60 seconds
+// Refresh data every 60 seconds
+fetchStockData();
+setInterval(fetchStockData, 60000);
     </script>
 
 </body>
