@@ -64,12 +64,11 @@
             const data = await response.json();
             console.log(`API Response for ${symbol}:`, JSON.stringify(data, null, 2)); // Debugging
 
-            // Fix: Update to use "close" instead of "price"
-            if (!data || data.status === "error" || !data.price) {
-    console.error("API Error:", JSON.stringify(data, null, 2));
-    continue;if (!data || data.status === "error" || !data.price) {
-    console.error("API Error:", JSON.stringify(data, null, 2));
-    continue;
+            // Ensure "close" and "change" exist in API response
+            if (!data || !data.close) {
+                console.error("No stock data received for", symbol, data);
+                continue;
+            }
 
             const name = stockNames[symbol] || symbol;
             const price = parseFloat(data.close).toFixed(2); // Updated to use "close" as the price
@@ -82,14 +81,15 @@
             console.error("Error fetching stock data for", symbol, error);
         }
 
-        await new Promise(resolve => setTimeout(resolve, 5000)); // Space out requests
+        // Wait 5 seconds before the next request to avoid API rate limits
+        await new Promise(resolve => setTimeout(resolve, 5000));
     }
 }
-
 
 // Fetch stock data every 60 seconds
 fetchStockData();
 setInterval(fetchStockData, 60000);
+
     </script>
 
 </body>
