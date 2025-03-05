@@ -51,7 +51,7 @@
     const tickerElement = document.getElementById("stock-ticker");
     tickerElement.innerHTML = "";
 
-    const apiKey = "423ed693d33d4f53889d96d6ac9ae012"; // Replace with your Twelve Data API key
+    const apiKey = "423ed693d33d4f53889d96d6ac9ae012"; // Replace with your actual API key
     const symbols = ["DIA", "SPY", "QQQ", "AAPL", "TSLA"];
     const stockNames = { "DIA": "Dow Jones", "SPY": "S&P 500", "QQQ": "Nasdaq" };
 
@@ -62,16 +62,18 @@
         try {
             const response = await fetch(url);
             const data = await response.json();
-            console.log(`API Response for ${symbol}:`, data);
+            console.log(`API Response for ${symbol}:`, JSON.stringify(data, null, 2)); // Debugging
 
-            if (!data || !data.price) {
-                console.error("No stock data received for", symbol, data);
-                continue;
-            }
+            // Fix: Update to use "close" instead of "price"
+            if (!data || data.status === "error" || !data.price) {
+    console.error("API Error:", JSON.stringify(data, null, 2));
+    continue;if (!data || data.status === "error" || !data.price) {
+    console.error("API Error:", JSON.stringify(data, null, 2));
+    continue;
 
             const name = stockNames[symbol] || symbol;
-            const price = parseFloat(data.price).toFixed(2);
-            const change = parseFloat(data.change).toFixed(2);
+            const price = parseFloat(data.close).toFixed(2); // Updated to use "close" as the price
+            const change = parseFloat(data.change).toFixed(2); // Updated to use "change"
             const changeClass = change >= 0 ? "up" : "down";
 
             tickerElement.innerHTML += `<span>${name}: ${price} <span class="${changeClass}">(${change})</span></span>`;
@@ -83,6 +85,7 @@
         await new Promise(resolve => setTimeout(resolve, 5000)); // Space out requests
     }
 }
+
 
 // Fetch stock data every 60 seconds
 fetchStockData();
