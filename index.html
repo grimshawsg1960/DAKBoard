@@ -57,7 +57,7 @@
         const indexFundNames = { "FXAIX": "Fidelity S&P 500", "FSKAX": "Fidelity Total Market" };
 
         // Currency Pairs (Twelve Data)
-        const currencyPairs = ["USDEUR", "USDJPY", "USDMXN"]; // Correct format for Twelve Data
+        const currencyPairs = ["USD/EUR", "USD/JPY", "USD/MXN"]; // Correct format for Twelve Data
 
 
         async function fetchStockData() {
@@ -78,7 +78,7 @@
 
             // Fetch Currency Exchange Rates from Twelve Data
             for (const pair of currencyPairs) {
-                const url = `https://api.twelvedata.com/quote?symbol=${pair}&apikey=${twelveDataApiKey}`;
+                const url = `https://api.twelvedata.com/forex_pairs?quote?symbol=${pair}&apikey=${twelveDataApiKey}`;
                 await fetchCurrencyData(url, pair, tickerElement);
             }
         }
