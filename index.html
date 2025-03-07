@@ -78,7 +78,7 @@
 
             // Fetch Currency Exchange Rates from Twelve Data
             for (const pair of currencyPairs) {
-                const url = `https://api.twelvedata.com/forex_pairs?quote?symbol=${pair}&apikey=${twelveDataApiKey}`;
+                const url = `https://api.twelvedata.com/quote?symbol=${pair}&apikey=${twelveDataApiKey}`;
                 await fetchCurrencyData(url, pair, tickerElement);
             }
         }
