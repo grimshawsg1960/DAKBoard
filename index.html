@@ -57,7 +57,8 @@
         const indexFundNames = { "FXAIX": "Fidelity S&P 500", "FSKAX": "Fidelity Total Market" };
 
         // Currency Pairs (Twelve Data)
-        const currencyPairs = ["USD/EUR", "USD/JPY", "USD/MXN"]; // Add or modify as needed
+        const currencyPairs = ["USDEUR", "USDJPY", "USDMXN"]; // Correct format for Twelve Data
+
 
         async function fetchStockData() {
             const tickerElement = document.getElementById("stock-ticker");
@@ -77,7 +78,7 @@
 
             // Fetch Currency Exchange Rates from Twelve Data
             for (const pair of currencyPairs) {
-                const url = `https://api.twelvedata.com/quote?symbol=${pair.replace("/", "")}&apikey=${twelveDataApiKey}`;
+                const url = `https://api.twelvedata.com/quote?symbol=${pair}&apikey=${twelveDataApiKey}`;
                 await fetchCurrencyData(url, pair, tickerElement);
             }
         }
@@ -113,27 +114,29 @@
         }
 
         async function fetchCurrencyData(url, pair, tickerElement) {
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-                console.log(`Currency API Response for ${pair}:`, JSON.stringify(data, null, 2));
+    try {
+        const response = await fetch(url);
+        const data = await response.json();
+        console.log(`Currency API Response for ${pair}:`, JSON.stringify(data, null, 2));
 
-                if (!data || !data.close) {
-                    console.error("No currency data received for", pair, data);
-                    return;
-                }
+        if (!data || !data.close) {
+            console.error("No currency data received for", pair, data);
+            return;
+        }
 
-                const price = parseFloat(data.close).toFixed(4); // More decimal places for forex
-                const change = parseFloat(data.change).toFixed(4);
-                const changeClass = change >= 0 ? "up" : "down";
+        const price = parseFloat(data.close).toFixed(4); // More decimal places for forex
+        const change = parseFloat(data.change).toFixed(4);
+        const changeClass = change >= 0 ? "up" : "down";
 
-                tickerElement.innerHTML += `<span>${pair}: ${price} <span class="${changeClass}">(${change})</span></span>`;
+        tickerElement.innerHTML += `<span>${pair}: ${price} <span class="${changeClass}">(${change})</span></span>`;
 
-            } catch (error) {
-                console.error("Error fetching currency data for", pair, error);
-            }
+    } catch (error) {
+        console.error("Error fetching currency data for", pair, error);
+    }
 
-            await new Promise(resolve => setTimeout(resolve, 5000)); // Space out requests
+    await new Promise(resolve => setTimeout(resolve, 5000)); // Space out requests
+}
+
         }
 
         // Fetch all data every 60 seconds
