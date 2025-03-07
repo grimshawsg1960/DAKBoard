@@ -56,9 +56,8 @@
         const indexFunds = ["FXAIX", "FSKAX"]; // Fidelity index funds
         const indexFundNames = { "FXAIX": "Fidelity S&P 500", "FSKAX": "Fidelity Total Market" };
 
-        // Currency Pairs (Twelve Data)
-        const currencyPairs = ["USD/EUR", "USD/JPY", "USD/MXN"]; // Correct format for Twelve Data
-
+        // Currency Pairs (Twelve Data) -- Removed slashes in the symbols
+        const currencyPairs = ["USDEUR", "USDJPY", "USDMXN"]; // Correct format for Twelve Data
 
         async function fetchStockData() {
             const tickerElement = document.getElementById("stock-ticker");
@@ -114,28 +113,28 @@
         }
 
         async function fetchCurrencyData(url, pair, tickerElement) {
-    try {
-        const response = await fetch(url);
-        const data = await response.json();
-        console.log(`Currency API Response for ${pair}:`, JSON.stringify(data, null, 2));
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                console.log(`Currency API Response for ${pair}:`, JSON.stringify(data, null, 2));
+
+                if (!data || !data.close) {
+                    console.error("No currency data received for", pair, data);
+                    return;
+                }
+
+                const price = parseFloat(data.close).toFixed(4); // More decimal places for forex
+                const change = parseFloat(data.change).toFixed(4);
+                const changeClass = change >= 0 ? "up" : "down";
+
+                tickerElement.innerHTML += `<span>${pair}: ${price} <span class="${changeClass}">(${change})</span></span>`;
+
+            } catch (error) {
+                console.error("Error fetching currency data for", pair, error);
+            }
+
+            await new Promise(resolve => setTimeout(resolve, 5000)); // Space out requests
         }
-        if (!data || !data.close) {
-            console.error("No currency data received for", pair, data);
-            return;
-        }
-
-        const price = parseFloat(data.close).toFixed(4); // More decimal places for forex
-        const change = parseFloat(data.change).toFixed(4);
-        const changeClass = change >= 0 ? "up" : "down";
-
-        tickerElement.innerHTML += `<span>${pair}: ${price} <span class="${changeClass}">(${change})</span></span>`;
-
-    } catch (error) {
-        console.error("Error fetching currency data for", pair, error);
-    }
-
-    await new Promise(resolve => setTimeout(resolve, 5000)); // Space out requests
-}
 
         // Fetch all data every 60 seconds
         fetchStockData();
